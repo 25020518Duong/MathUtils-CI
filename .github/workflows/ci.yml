@@ -1,0 +1,36 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout mã nguồn từ repository
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # 2. Cấu hình môi trường Java 17 LTS
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    # 3. Chạy vòng đời Maven Build (clean -> compile -> test -> package)
+    - name: Build and Test with Maven
+      run: mvn -B clean package --file pom.xml
+
+    # 4. Lưu trữ tệp .jar đã đóng gói làm Build Artifact
+    - name: Upload Build Artifact (.jar)
+      uses: actions/upload-artifact@v4
+      with:
+        name: math-utils-jar
+        path: target/*.jar
+        retention-days: 7
